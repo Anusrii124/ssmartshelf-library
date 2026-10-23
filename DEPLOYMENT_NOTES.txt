@@ -1,0 +1,10 @@
+SSmartShelf deployment notes
+
+Render settings:
+Build command: pip install -r requirements.txt
+Start command: gunicorn app:app
+Set environment variables: SECRET_KEY (a long random value), ADMIN_EMAIL (your chosen admin email), ADMIN_PASSWORD (a strong unique password).
+
+This demo uses SQLite. Free Render web services have ephemeral filesystems, so registrations/books can be reset after a restart, sleep, or redeploy. Do not use for real personal data without migrating to a persistent database and adding production security protections.
+
+The admin account is created only when the database is first initialized. If the database already has an admin account, changing ADMIN_PASSWORD later will not change that existing account's password.

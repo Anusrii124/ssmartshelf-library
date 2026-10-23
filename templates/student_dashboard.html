@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard | SmartShelf{% endblock %}
+{% block content %}
+<section class="dashboard-heading"><div><p class="eyebrow">STUDENT WORKSPACE</p><h1>Hello, {{ user.name }} 👋</h1><p class="muted">Manage your borrowed books and discover your next read.</p></div><a class="button primary-button" href="{{ url_for('home') }}">Browse books ↗</a></section>
+<div class="dashboard-columns">
+  <section class="panel">
+    <div class="section-head"><div><p class="eyebrow">YOUR READING LIST</p><h2>Borrowing history</h2></div></div>
+    {% if loans %}
+    <div class="table-wrap"><table><thead><tr><th>Book</th><th>Borrowed</th><th>Due date</th><th>Status / fine</th><th>Action</th></tr></thead><tbody>
+    {% for loan in loans %}
+      {% set due = loan.due_date %}
+      <tr><td><strong>{{ loan.book_title }}</strong><small>{{ loan.category }}</small></td><td>{{ loan.borrowed_on }}</td><td>{{ due }}</td>
+      <td>{% if loan.returned_on %}<span class="status returned">Returned</span>{% else %}<span class="status active">Borrowed</span>{% endif %}
+      {% if not loan.returned_on and today is defined %}{% endif %}</td>
+      <td>{% if not loan.returned_on %}<form method="post" action="{{ url_for('return_loan', loan_id=loan.id) }}"><button class="small-button" type="submit">Return</button></form>{% else %}—{% endif %}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+    {% else %}<p class="empty-state">You haven't borrowed any books yet. Browse the catalogue to get started.</p>{% endif %}
+    <p class="fine-note">Loan period: 14 days. Overdue demo fine: 5 units per late day, calculated when the book is returned.</p>
+  </section>
+  <section class="panel recommendation-panel">
+    <p class="eyebrow">SMART DISCOVERY</p><h2>AI book assistant ✧</h2>
+    <p class="muted">Enter your interests and get personalised book suggestions.</p>
+    <form action="{{ url_for('recommend') }}" method="post" class="form-stack">
+      <label>Your interests<input name="interests" value="{{ user.interests }}" placeholder="Python, AI, fiction..." required maxlength="200"></label>
+      <button class="button primary-button" type="submit">Recommend books</button>
+    </form>
+    <div class="recommend-list">
+    {% for book in recommendations %}
+      <div class="recommend-item"><span class="mini-cover">📚</span><div><strong>{{ book.title }}</strong><small>{{ book.category }} · {{ book.available_copies }} available</small></div></div>
+    {% else %}<p class="fine-note">Add interests above to get recommendations. Try Python, programming, AI, fiction, data, web, science, or self-help.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | SmartShelf{% endblock %}
+{% block content %}
+<section class="dashboard-heading"><div><p class="eyebrow">LIBRARIAN WORKSPACE</p><h1>Admin dashboard</h1><p class="muted">Manage inventory, monitor loans, and review registered students.</p></div></section>
+<div class="stats admin-stats">
+  <article><span class="stat-symbol purple">▤</span><div><small>Book titles</small><strong>{{ stats.titles }}</strong></div></article>
+  <article><span class="stat-symbol green">✓</span><div><small>Total copies</small><strong>{{ stats.copies }}</strong></div></article>
+  <article><span class="stat-symbol orange">⇄</span><div><small>Active loans</small><strong>{{ stats.active }}</strong></div></article>
+  <article><span class="stat-symbol blue">♙</span><div><small>Students</small><strong>{{ stats.students }}</strong></div></article>
+</div>
+<div class="admin-grid">
+  <section class="panel">
+    <div class="section-head"><div><p class="eyebrow">INVENTORY</p><h2>Add a book</h2></div></div>
+    <form method="post" action="{{ url_for('add_book') }}" class="form-stack">
+      <label>Title<input name="title" required maxlength="120" placeholder="Book title"></label>
+      <label>Author<input name="author" required maxlength="100" placeholder="Author name"></label>
+      <label>Category<input name="category" required maxlength="60" placeholder="e.g. Programming"></label>
+      <label>Description<textarea name="description" rows="3" maxlength="500" placeholder="Short description"></textarea></label>
+      <label>Number of copies<input type="number" name="copies" required min="1" max="500" value="1"></label>
+      <button class="button primary-button" type="submit">＋ Add book</button>
+    </form>
+  </section>
+  <section class="panel">
+    <div class="section-head"><div><p class="eyebrow">INVENTORY LIST</p><h2>Manage books</h2></div></div>
+    <div class="manage-list">
+    {% for book in books %}
+      <details class="manage-book"><summary><span><strong>{{ book.title }}</strong><small>{{ book.category }} · {{ book.available_copies }}/{{ book.total_copies }} available</small></span><span>⌄</span></summary>
+        <form method="post" action="{{ url_for('update_book', book_id=book.id) }}" class="form-stack compact-form">
+          <label>Title<input name="title" required value="{{ book.title }}"></label>
+          <label>Author<input name="author" required value="{{ book.author }}"></label>
+          <label>Category<input name="category" required value="{{ book.category }}"></label>
+          <label>Description<textarea name="description" rows="2">{{ book.description }}</textarea></label>
+          <label>Total copies<input type="number" name="total_copies" min="1" max="500" value="{{ book.total_copies }}" required></label>
+          <button class="button primary-button" type="submit">Save changes</button>
+        </form>
+        <form method="post" action="{{ url_for('delete_book', book_id=book.id) }}" onsubmit="return confirm('Delete this book if it has no borrowing history?')"><button class="danger-button" type="submit">Delete book</button></form>
+      </details>
+    {% endfor %}
+    </div>
+  </section>
+</div>
+<section class="panel loans-panel">
+  <div class="section-head"><div><p class="eyebrow">CIRCULATION</p><h2>Recent borrowing records</h2></div></div>
+  {% if loans %}<div class="table-wrap"><table><thead><tr><th>Student</th><th>Book</th><th>Borrowed</th><th>Due date</th><th>Returned</th><th>Action</th></tr></thead><tbody>
+  {% for loan in loans %}<tr><td>{{ loan.student_name }}</td><td>{{ loan.book_title }}</td><td>{{ loan.borrowed_on }}</td><td>{{ loan.due_date }}</td><td>{{ loan.returned_on or 'Not returned' }}</td><td>{% if not loan.returned_on %}<form method="post" action="{{ url_for('return_loan', loan_id=loan.id) }}"><button class="small-button" type="submit">Mark returned</button></form>{% else %}—{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="empty-state">No borrowing records yet.</p>{% endif %}
+</section>
+{% endblock %}

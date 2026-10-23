@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Student Sign Up | SmartShelf{% endblock %}
+{% block content %}
+<div class="auth-wrap"><section class="auth-card">
+  <p class="eyebrow">JOIN THE LIBRARY</p><h1>Create your student account</h1><p class="muted">Your interests help the recommendation feature find relevant books.</p>
+  <form method="post" class="form-stack">
+    <label>Full name<input name="name" required maxlength="80" autocomplete="name" placeholder="Your name"></label>
+    <label>Email address<input type="email" name="email" required maxlength="150" autocomplete="email" placeholder="you@example.com"></label>
+    <label>Password <span class="label-hint">(minimum 8 characters)</span><input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Create a password"></label>
+    <label>Your interests<input name="interests" maxlength="200" placeholder="e.g. Python, AI, science fiction"></label>
+    <button class="button primary-button full" type="submit">Create account</button>
+  </form>
+  <p class="auth-bottom">Already registered? <a href="{{ url_for('login') }}">Log in</a></p>
+</section></div>
+{% endblock %}

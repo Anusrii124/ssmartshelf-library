@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Book Catalogue | SmartShelf{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow light">WELCOME TO YOUR DIGITAL LIBRARY</p>
+    <h1>Find your next<br><em>great read.</em></h1>
+    <p>Explore books, borrow your favourites, and get recommendations based on your interests.</p>
+    {% if not user %}<a class="button light-button" href="{{ url_for('register') }}">Get started <span>↗</span></a>
+    {% else %}<a class="button light-button" href="{{ url_for('dashboard') }}">Open dashboard <span>↗</span></a>{% endif %}
+  </div>
+  <div class="hero-art"><div class="ring"></div><div class="book-stack"><span>✦</span><i></i><b></b><strong></strong></div><small>READ · LEARN · GROW</small></div>
+</section>
+<section class="stats">
+  <article><span class="stat-symbol purple">▤</span><div><small>Book titles</small><strong>{{ stats.titles }}</strong></div></article>
+  <article><span class="stat-symbol green">✓</span><div><small>Total available copies</small><strong>{{ stats.available }}</strong></div></article>
+  <article><span class="stat-symbol orange">♙</span><div><small>Registered students</small><strong>{{ stats.students }}</strong></div></article>
+</section>
+<section class="section-head" id="catalogue">
+  <div><p class="eyebrow">EXPLORE THE COLLECTION</p><h2>Book catalogue</h2></div>
+  <span class="result-count">{{ books|length }} result(s)</span>
+</section>
+<form class="search-bar" method="get" action="{{ url_for('home') }}">
+  <input name="q" value="{{ search }}" placeholder="Search by title, author or category..." aria-label="Search books">
+  <select name="category" aria-label="Filter category">
+    <option value="">All categories</option>
+    {% for item in categories %}<option value="{{ item.category }}" {% if category == item.category %}selected{% endif %}>{{ item.category }}</option>{% endfor %}
+  </select>
+  <button class="button primary-button" type="submit">Search</button>
+  {% if search or category %}<a class="reset-link" href="{{ url_for('home') }}">Reset</a>{% endif %}
+</form>
+<div class="book-grid">
+  {% for book in books %}
+  <article class="book-card">
+    <div class="book-cover cover-{{ loop.index % 5 }}"><span class="book-emoji">{{ ['📘','📗','📙','📕','📔'][loop.index % 5] }}</span><span class="category-tag">{{ book.category }}</span></div>
+    <div class="book-body">
+      <h3>{{ book.title }}</h3><p class="author">by {{ book.author }}</p>
+      <p class="description">{{ book.description or 'Explore this title from the library collection.' }}</p>
+      <div class="book-foot"><span class="{{ 'available' if book.available_copies else 'unavailable' }}">{{ book.available_copies }} available</span></div>
+      {% if user and user.role == 'student' %}
+        <form method="post" action="{{ url_for('borrow', book_id=book.id) }}"><button class="button card-button" type="submit" {% if not book.available_copies %}disabled{% endif %}>Borrow book ↗</button></form>
+      {% elif not user %}
+        <a class="button card-button" href="{{ url_for('login') }}">Log in to borrow</a>
+      {% elif user.role == 'admin' %}
+        <a class="button card-button" href="{{ url_for('dashboard') }}">Manage in dashboard</a>
+      {% endif %}
+    </div>
+  </article>
+  {% else %}
+  <div class="empty-state">No books match your search. Try another keyword or category.</div>
+  {% endfor %}
+</div>
+{% endblock %}

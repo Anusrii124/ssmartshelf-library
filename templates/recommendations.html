@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}AI Recommendations | SmartShelf{% endblock %}
+{% block content %}
+<section class="dashboard-heading"><div><p class="eyebrow">SMART DISCOVERY</p><h1>Your book recommendations</h1><p class="muted">Based on these interests: {{ interests }}</p></div><a class="button secondary-button" href="{{ url_for('dashboard') }}">← Dashboard</a></section>
+<div class="book-grid">
+{% for book in results %}
+<article class="book-card"><div class="book-cover cover-{{ loop.index % 5 }}"><span class="book-emoji">✨</span><span class="category-tag">{{ book.category }}</span></div><div class="book-body"><h3>{{ book.title }}</h3><p class="author">by {{ book.author }}</p><p class="description">{{ book.description }}</p><span class="{{ 'available' if book.available_copies else 'unavailable' }}">{{ book.available_copies }} available</span>{% if book.available_copies %}<form method="post" action="{{ url_for('borrow', book_id=book.id) }}"><button class="button card-button" type="submit">Borrow book ↗</button></form>{% endif %}</div></article>
+{% else %}<div class="empty-state">No close matches found. Try interests like Python, programming, AI, fiction, data, web, science, or self-help.</div>{% endfor %}
+</div>
+<p class="fine-note">How it works: the demo algorithm gives points when your interest words match book titles, descriptions, or categories. This is a basic recommendation algorithm, not a trained AI model.</p>
+{% endblock %}

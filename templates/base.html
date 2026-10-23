@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartShelf Library{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('home') }}"><span class="brand-icon">S</span><span>SmartShelf<small>LIBRARY MANAGEMENT</small></span></a>
+    <nav>
+      <a href="{{ url_for('home') }}">Book catalogue</a>
+      {% if user %}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <span class="user-chip">{{ user.name }} · {{ user.role|title }}</span>
+        <a class="nav-login" href="{{ url_for('logout') }}">Log out</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Log in</a>
+        <a class="nav-cta" href="{{ url_for('register') }}">Student sign up</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="page">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">SmartShelf · AI-Based Library Management System · College project prototype</footer>
+</body>
+</html>
