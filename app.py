@@ -250,7 +250,10 @@ def dashboard():
                 ORDER BY loans.id DESC LIMIT 30
             """).fetchall()
             books = db.execute("SELECT * FROM books ORDER BY title").fetchall()
-            return render_template("admin_dashboard.html", user=user, stats=stats, loans=loans, books=books)
+            students = db.execute(
+                "SELECT id, name, email, interests, created_at FROM users WHERE role='student' ORDER BY created_at DESC, id DESC"
+            ).fetchall()
+            return render_template("admin_dashboard.html", user=user, stats=stats, loans=loans, books=books, students=students)
         loans = db.execute("""
             SELECT loans.*, books.title AS book_title, books.author, books.category
             FROM loans JOIN books ON books.id=loans.book_id
