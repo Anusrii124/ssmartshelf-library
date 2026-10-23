@@ -8,6 +8,16 @@
   <article><span class="stat-symbol orange">⇄</span><div><small>Active loans</small><strong>{{ stats.active }}</strong></div></article>
   <article><span class="stat-symbol blue">♙</span><div><small>Students</small><strong>{{ stats.students }}</strong></div></article>
 </div>
+<section class="panel loans-panel">
+  <div class="section-head"><div><p class="eyebrow">USER MANAGEMENT</p><h2>Registered students</h2><p class="muted">View the accounts created through student sign up.</p></div></div>
+  {% if students %}
+  <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Interests</th><th>Registered on</th></tr></thead><tbody>
+  {% for student in students %}
+  <tr><td>{{ student.name }}</td><td>{{ student.email }}</td><td>{{ student.interests or '—' }}</td><td>{{ student.created_at }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+  {% else %}<p class="empty-state">No students have registered yet.</p>{% endif %}
+</section>
 <div class="admin-grid">
   <section class="panel">
     <div class="section-head"><div><p class="eyebrow">INVENTORY</p><h2>Add a book</h2></div></div>
